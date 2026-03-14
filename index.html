@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mama's Dashboard">
+<title>Mama's Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-deep: #0d1f15;
+    --bg-mid: #132b1e;
+    --bg-card: rgba(26,46,34,0.25);
+    --border: rgba(42,74,53,0.3);
+    --green-main: #3a7d54;
+    --green-light: #6abe8a;
+    --green-muted: #8ab89e;
+    --green-dim: #5a7a6a;
+    --text-main: #c8e6d4;
+    --red: #d94f4f;
+    --yellow: #d4a84b;
+    --green-pri: #4a9e6e;
+  }
+
+- { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body {
+font-family: ‘Outfit’, sans-serif;
+background: linear-gradient(170deg, var(–bg-deep) 0%, var(–bg-mid) 40%, #0f2318 100%);
+color: var(–text-main);
+min-height: 100vh;
+min-height: 100dvh;
+overflow-x: hidden;
+-webkit-font-smoothing: antialiased;
+}
+
+body::before {
+content: ‘’;
+position: fixed; inset: 0; opacity: 0.03; pointer-events: none;
+background-image: radial-gradient(circle at 2px 2px, var(–green-main) 1px, transparent 0);
+background-size: 32px 32px;
+}
+
+.header { padding: 48px 24px 20px; position: relative; }
+.header-sub { font-size: 11px; letter-spacing: 4px; color: var(–green-dim); text-transform: uppercase; margin-bottom: 6px; }
+.header h1 { font-family: ‘Playfair Display’, serif; font-size: 32px; font-weight: 500; line-height: 1.2; }
+.header-date { font-size: 13px; color: rgba(90,122,106,0.56); margin-top: 6px; }
+
+.breathe-btn {
+position: absolute; top: 48px; right: 24px;
+background: linear-gradient(135deg, rgba(42,94,64,0.13), rgba(58,125,84,0.19));
+border: 1px solid rgba(58,125,84,0.25); border-radius: 16px;
+padding: 10px 18px; color: var(–green-muted); font-size: 13px;
+cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 8px;
+backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+}
+
+.tabs {
+display: flex; gap: 4px; padding: 0 24px; margin-bottom: 24px;
+overflow-x: auto; -webkit-overflow-scrolling: touch;
+scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tab-btn {
+padding: 10px 18px; border-radius: 12px; border: none;
+background: transparent; color: var(–green-dim); font-size: 13px;
+cursor: pointer; font-family: inherit; font-weight: 400;
+display: flex; align-items: center; gap: 6px; white-space: nowrap;
+transition: all 0.25s;
+}
+.tab-btn.active { background: rgba(58,125,84,0.19); color: var(–text-main); font-weight: 600; }
+
+.content { padding: 0 24px 120px; }
+
+.card {
+padding: 20px; border-radius: 16px;
+background: linear-gradient(135deg, rgba(26,46,34,0.25), rgba(26,61,42,0.19));
+border: 1px solid rgba(42,74,53,0.19); margin-bottom: 20px;
+}
+.card-title {
+font-size: 16px; font-weight: 500; color: var(–green-muted);
+display: flex; align-items: center; gap: 8px; margin-bottom: 16px;
+}
+.card-sub { font-size: 12px; color: var(–green-dim); margin: -10px 0 16px; }
+
+/* Checkbox */
+.check {
+width: 24px; height: 24px; border-radius: 7px; cursor: pointer;
+border: 2px solid rgba(42,74,53,0.38); background: transparent;
+display: flex; align-items: center; justify-content: center;
+transition: all 0.2s; flex-shrink: 0;
+}
+.check.checked { background: var(–green-main); border-color: var(–green-main); }
+.check.checked::after { content: ‘✓’; color: #fff; font-size: 13px; }
+.check.red.checked { background: var(–red); border-color: var(–red); }
+.check.yellow.checked { background: var(–yellow); border-color: var(–yellow); }
+.check.green.checked { background: var(–green-pri); border-color: var(–green-pri); }
+
+/* Priority badges */
+.pri-badge { padding: 2px 8px; border-radius: 8px; font-size: 10px; font-weight: 600; }
+.pri-badge.high { color: var(–red); background: rgba(217,79,79,0.08); }
+.pri-badge.medium { color: var(–yellow); background: rgba(212,168,75,0.08); }
+.pri-badge.low { color: var(–green-pri); background: rgba(74,158,110,0.08); }
+
+/* Task row */
+.task-row {
+display: flex; align-items: center; gap: 12px; padding: 14px 16px;
+border-radius: 12px; margin-bottom: 6px; transition: all 0.25s;
+}
+.task-row.high-bg { background: rgba(217,79,79,0.08); border: 1px solid rgba(217,79,79,0.15); }
+.task-row.medium-bg { background: rgba(212,168,75,0.08); border: 1px solid rgba(212,168,75,0.15); }
+.task-row.low-bg { background: rgba(74,158,110,0.08); border: 1px solid rgba(74,158,110,0.15); }
+.task-row.done { opacity: 0.45; background: rgba(26,46,34,0.08); border: 1px solid rgba(42,74,53,0.06); }
+.task-text { flex: 1; font-size: 14px; }
+.task-text.done { color: var(–green-dim); text-decoration: line-through; }
+.task-delete { background: none; border: none; color: rgba(90,122,106,0.25); font-size: 18px; cursor: pointer; padding: 0 4px; }
+
+/* Add task area */
+.add-area { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
+.add-input {
+flex: 1; min-width: 160px; padding: 12px 16px; border-radius: 12px;
+background: rgba(26,46,34,0.25); border: 1px solid rgba(42,74,53,0.25);
+color: var(–text-main); font-size: 14px; font-family: inherit; outline: none;
+}
+.add-input::placeholder { color: rgba(90,122,106,0.4); }
+.add-btn {
+padding: 10px 20px; border-radius: 12px; border: none;
+background: var(–green-main); color: #fff; font-size: 14px;
+cursor: pointer; font-family: inherit; font-weight: 500;
+}
+
+/* Priority selector */
+.pri-sel { display: flex; gap: 4px; }
+.pri-opt {
+padding: 4px 12px; font-size: 11px; border-radius: 12px;
+border: 1px solid rgba(42,74,53,0.25); background: transparent;
+color: var(–green-dim); cursor: pointer; font-family: inherit; transition: all 0.2s;
+}
+.pri-opt.sel-high { border-color: var(–red); color: var(–red); background: rgba(217,79,79,0.08); font-weight: 600; }
+.pri-opt.sel-medium { border-color: var(–yellow); color: var(–yellow); background: rgba(212,168,75,0.08); font-weight: 600; }
+.pri-opt.sel-low { border-color: var(–green-pri); color: var(–green-pri); background: rgba(74,158,110,0.08); font-weight: 600; }
+
+/* Legend */
+.legend { display: flex; gap: 16px; margin-bottom: 20px; padding: 12px 16px; border-radius: 12px; background: rgba(26,46,34,0.06); border: 1px solid rgba(42,74,53,0.12); }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(–green-dim); }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+/* Med/Prayer row */
+.med-row, .prayer-row {
+display: flex; align-items: center; gap: 14px; padding: 14px 16px;
+border-radius: 12px; margin-bottom: 8px; transition: all 0.3s;
+background: rgba(13,31,21,0.25); border: 1px solid rgba(42,74,53,0.12);
+}
+.med-row.checked-row, .prayer-row.checked-row {
+background: rgba(58,125,84,0.08); border-color: rgba(58,125,84,0.19);
+}
+.med-icon { font-size: 22px; }
+.med-label { flex: 1; font-size: 14px; }
+.med-label.done { color: var(–green-dim); text-decoration: line-through; }
+.med-time {
+padding: 3px 10px; border-radius: 8px; font-size: 11px; font-weight: 600;
+background: rgba(58,125,84,0.13); color: var(–green-light);
+}
+
+/* Prayer extras */
+.prayer-name { font-size: 15px; font-weight: 500; }
+.prayer-name.done { color: var(–green-dim); text-decoration: line-through; }
+.prayer-time-label { font-size: 11px; color: rgba(90,122,106,0.5); }
+.prayer-completed { font-size: 11px; color: var(–green-main); font-weight: 500; }
+
+/* Progress bars */
+.progress-track { height: 8px; border-radius: 4px; background: rgba(13,31,21,0.38); overflow: hidden; margin-bottom: 16px; }
+.progress-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(–green-main), var(–green-light)); transition: width 0.5s ease; }
+.prayer-progress { display: flex; gap: 3px; height: 6px; border-radius: 3px; overflow: hidden; background: rgba(13,31,21,0.38); margin-bottom: 24px; }
+.prayer-seg { flex: 1; transition: background 0.3s; }
+.prayer-seg.filled { background: var(–green-main); }
+
+/* Fasting grid */
+.fast-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.fast-tile {
+padding: 14px 8px; border-radius: 12px; text-align: center; cursor: pointer;
+background: rgba(13,31,21,0.25); border: 1px solid rgba(42,74,53,0.12);
+transition: all 0.25s;
+}
+.fast-tile.done { background: rgba(58,125,84,0.15); border-color: rgba(58,125,84,0.25); }
+.fast-num { font-size: 20px; margin-bottom: 4px; }
+.fast-label { font-size: 10px; color: var(–green-dim); }
+.fast-tile.done .fast-label { color: var(–green-light); }
+
+.congrats {
+margin-top: 16px; padding: 14px; border-radius: 12px; text-align: center;
+background: linear-gradient(135deg, rgba(58,125,84,0.13), rgba(106,190,138,0.06));
+border: 1px solid rgba(58,125,84,0.25); color: var(–green-light); font-size: 14px;
+}
+
+/* Calendar */
+.cal-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.cal-nav button { background: none; border: none; color: var(–green-muted); font-size: 20px; cursor: pointer; padding: 8px; }
+.cal-nav span { color: var(–text-main); font-size: 15px; font-weight: 500; }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; text-align: center; }
+.cal-day-header { font-size: 10px; color: rgba(90,122,106,0.5); padding: 4px; font-weight: 600; }
+.cal-cell {
+padding: 7px 2px; border-radius: 8px; font-size: 12px; color: var(–green-muted);
+border: 1px solid transparent;
+}
+.cal-cell.today { border-color: var(–green-main); font-weight: 700; }
+.cal-cell.period { background: rgba(217,79,79,0.19); color: #e87070; }
+.cal-cell.fertile { background: rgba(74,158,110,0.13); color: var(–green-light); }
+.cal-cell.ovulation { background: rgba(212,168,75,0.15); color: var(–yellow); }
+.cal-legend { display: flex; gap: 16px; margin-top: 14px; flex-wrap: wrap; }
+.cal-legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(–green-dim); }
+.cal-legend-dot { width: 10px; height: 10px; border-radius: 50%; opacity: 0.7; }
+.next-period {
+margin-top: 14px; padding: 10px 14px; border-radius: 10px;
+background: rgba(217,79,79,0.06); border: 1px solid rgba(217,79,79,0.13);
+font-size: 13px; color: #e87070;
+}
+
+/* Breathing overlay */
+.breath-overlay {
+position: fixed; inset: 0; z-index: 1000;
+background: rgba(15,30,20,0.95); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.breath-close {
+position: absolute; top: 56px; right: 24px; background: none; border: none;
+color: var(–green-muted); font-size: 28px; cursor: pointer;
+}
+.breath-label { color: var(–green-muted); font-size: 14px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 32px; }
+.breath-circle {
+width: 180px; height: 180px; border-radius: 50%;
+background: radial-gradient(circle, rgba(58,125,84,0.25), rgba(26,61,42,0.5));
+border: 2px solid rgba(58,125,84,0.38);
+display: flex; align-items: center; justify-content: center;
+box-shadow: 0 0 60px rgba(58,125,84,0.19);
+}
+.breath-circle.inhale { transition: transform 4s ease-in-out; transform: scale(1.4); }
+.breath-circle.hold { transform: scale(1.4); transition: transform 0.3s; }
+.breath-circle.exhale { transition: transform 8s ease-in-out; transform: scale(0.8); }
+.breath-circle.ready, .breath-circle.done { transform: scale(1); transition: transform 0.5s ease; }
+.breath-count { color: var(–text-main); font-size: 36px; font-weight: 300; }
+.breath-phase { color: var(–text-main); font-size: 20px; margin-top: 40px; font-weight: 300; }
+.breath-cycle-info { color: rgba(90,158,118,0.25); font-size: 13px; margin-top: 8px; }
+.breath-done-btn {
+margin-top: 24px; padding: 10px 32px;
+background: rgba(58,125,84,0.25); border: 1px solid rgba(58,125,84,0.38);
+border-radius: 24px; color: var(–text-main); font-size: 15px;
+cursor: pointer; font-family: inherit;
+}
+
+.hidden { display: none !important; }
+
+/* Reset button */
+.reset-day-btn {
+margin-top: 16px; padding: 8px 16px; border-radius: 10px;
+background: rgba(90,122,106,0.1); border: 1px solid rgba(42,74,53,0.2);
+color: var(–green-dim); font-size: 12px; cursor: pointer; font-family: inherit;
+width: 100%; text-align: center;
+}
+</style>
+
+</head>
+<body>
+
+<!-- Breathing Overlay -->
+
+<div id="breathOverlay" class="breath-overlay hidden">
+  <button class="breath-close" onclick="closeBreathing()">✕</button>
+  <p class="breath-label">4-7-8 Breathing</p>
+  <div id="breathCircle" class="breath-circle ready" onclick="startBreathing()">
+    <span id="breathCount" class="breath-count">☽</span>
+  </div>
+  <p id="breathPhase" class="breath-phase">Tap to Begin</p>
+  <p id="breathCycleInfo" class="breath-cycle-info hidden"></p>
+  <button id="breathDoneBtn" class="breath-done-btn hidden" onclick="closeBreathing()">Done</button>
+</div>
+
+<!-- Header -->
+
+<div class="header">
+  <p class="header-sub">Bismillah</p>
+  <h1>Mama's Dashboard</h1>
+  <p class="header-date" id="headerDate"></p>
+  <button class="breathe-btn" onclick="openBreathing()">
+    <span style="font-size:18px;line-height:1">☽</span> Breathe
+  </button>
+</div>
+
+<!-- Tabs -->
+
+<div class="tabs">
+  <button class="tab-btn active" data-tab="tasks" onclick="switchTab('tasks')">✦ Tasks</button>
+  <button class="tab-btn" data-tab="health" onclick="switchTab('health')">❤ Health</button>
+  <button class="tab-btn" data-tab="prayer" onclick="switchTab('prayer')">☪ Prayer</button>
+  <button class="tab-btn" data-tab="cycle" onclick="switchTab('cycle')">◑ Cycle</button>
+</div>
+
+<!-- Content -->
+
+<div class="content">
+
+  <!-- ═══ TASKS TAB ═══ -->
+
+  <div id="tab-tasks" class="tab-content">
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div> High</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--yellow)"></div> Medium</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--green-pri)"></div> Low</div>
+    </div>
+
+```
+<div class="add-area">
+  <input class="add-input" id="newTaskInput" placeholder="Add a new task..." onkeydown="if(event.key==='Enter')addTask()">
+  <div class="pri-sel" id="priSelector">
+    <button class="pri-opt" data-pri="high" onclick="selectPriority('high')">High</button>
+    <button class="pri-opt sel-medium" data-pri="medium" onclick="selectPriority('medium')">Medium</button>
+    <button class="pri-opt" data-pri="low" onclick="selectPriority('low')">Low</button>
+  </div>
+  <button class="add-btn" onclick="addTask()">Add</button>
+</div>
+
+<div id="taskList"></div>
+```
+
+  </div>
+
+  <!-- ═══ HEALTH TAB ═══ -->
+
+  <div id="tab-health" class="tab-content hidden">
+
+```
+<!-- Medication -->
+<div class="card">
+  <div class="card-title">💊 Daily Medication & Vitamins</div>
+  <div id="medList"></div>
+  <button class="reset-day-btn" onclick="resetMeds()">Reset for new day</button>
+</div>
+
+<!-- Fasting -->
+<div class="card">
+  <div class="card-title">🌙 Missed Fasting Days</div>
+  <p class="card-sub" id="fastingSub"></p>
+  <div class="progress-track"><div class="progress-fill" id="fastingProgress"></div></div>
+  <div class="fast-grid" id="fastingGrid"></div>
+  <div id="fastingCongrats" class="congrats hidden">✦ Alhamdulillah — All 10 days completed! ✦</div>
+</div>
+```
+
+  </div>
+
+  <!-- ═══ PRAYER TAB ═══ -->
+
+  <div id="tab-prayer" class="tab-content hidden">
+    <div class="card">
+      <div class="card-title"><span style="font-size:20px">☪</span> Daily Salah</div>
+      <p class="card-sub" id="prayerSub"></p>
+      <div class="prayer-progress" id="prayerProgress"></div>
+      <div id="prayerList"></div>
+      <div id="prayerCongrats" class="congrats hidden">✦ MashaAllah — All prayers completed today ✦</div>
+      <button class="reset-day-btn" onclick="resetPrayers()">Reset for new day</button>
+    </div>
+  </div>
+
+  <!-- ═══ CYCLE TAB ═══ -->
+
+  <div id="tab-cycle" class="tab-content hidden">
+    <div class="card">
+      <div class="card-title">◑ Cycle Tracker</div>
+      <div class="cal-nav">
+        <button onclick="calPrev()">‹</button>
+        <span id="calMonthLabel"></span>
+        <button onclick="calNext()">›</button>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+      <div class="cal-legend">
+        <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#e87070"></div> Period</div>
+        <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#6abe8a"></div> Fertile</div>
+        <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#d4a84b"></div> Ovulation</div>
+      </div>
+      <div class="next-period" id="nextPeriodInfo"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// AUTO-SAVE SYSTEM
+// ═══════════════════════════════════════
+function save(key, data) {
+  try { localStorage.setItem('mama-' + key, JSON.stringify(data)); } catch(e) {}
+}
+function load(key, fallback) {
+  try {
+    const d = localStorage.getItem('mama-' + key);
+    return d ? JSON.parse(d) : fallback;
+  } catch(e) { return fallback; }
+}
+
+// ═══════════════════════════════════════
+// DATE
+// ═══════════════════════════════════════
+const today = new Date();
+const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const DAYS_SHORT = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+document.getElementById('headerDate').textContent = today.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
+
+// Check if it's a new day and auto-reset daily items
+const lastDate = load('lastDate', '');
+const todayStr = today.toDateString();
+if (lastDate && lastDate !== todayStr) {
+  // New day — reset daily items
+  save('meds', { morningVitamins: false, dayMeds: false, nightMeds: false });
+  save('prayers', { Fajr: false, Dhuhr: false, Asr: false, Maghrib: false, Isha: false });
+}
+save('lastDate', todayStr);
+
+// ═══════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════
+function switchTab(tab) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.remove('hidden');
+  document.querySelector(`.tab-btn[data-tab="${tab}"]`).classList.add('active');
+}
+
+// ═══════════════════════════════════════
+// TASKS
+// ═══════════════════════════════════════
+let todos = load('todos', [
+  { id: 1, text: 'Take morning vitamins', done: false, priority: 'high' },
+  { id: 2, text: 'Drink 8 glasses of water', done: false, priority: 'medium' },
+  { id: 3, text: 'Go for a walk', done: false, priority: 'low' },
+]);
+let newPriority = 'medium';
+
+function selectPriority(pri) {
+  newPriority = pri;
+  document.querySelectorAll('#priSelector .pri-opt').forEach(b => {
+    b.className = 'pri-opt' + (b.dataset.pri === pri ? ` sel-${pri}` : '');
+  });
+}
+
+function renderTasks() {
+  const order = { high: 0, medium: 1, low: 2 };
+  const sorted = [...todos].sort((a, b) => order[a.priority] - order[b.priority]);
+  const container = document.getElementById('taskList');
+  container.innerHTML = sorted.map(t => `
+    <div class="task-row ${t.done ? 'done' : t.priority + '-bg'}">
+      <div class="check ${t.done ? 'checked' : ''} ${t.priority}" onclick="toggleTask(${t.id})"></div>
+      <span class="task-text ${t.done ? 'done' : ''}">${escHtml(t.text)}</span>
+      <span class="pri-badge ${t.priority}">${t.priority.charAt(0).toUpperCase() + t.priority.slice(1)}</span>
+      <button class="task-delete" onclick="deleteTask(${t.id})">×</button>
+    </div>
+  `).join('');
+  save('todos', todos);
+}
+
+function toggleTask(id) {
+  todos = todos.map(t => t.id === id ? { ...t, done: !t.done } : t);
+  renderTasks();
+}
+
+function deleteTask(id) {
+  todos = todos.filter(t => t.id !== id);
+  renderTasks();
+}
+
+function addTask() {
+  const input = document.getElementById('newTaskInput');
+  const text = input.value.trim();
+  if (!text) return;
+  todos.push({ id: Date.now(), text, done: false, priority: newPriority });
+  input.value = '';
+  renderTasks();
+}
+
+function escHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+// ═══════════════════════════════════════
+// MEDICATION
+// ═══════════════════════════════════════
+let meds = load('meds', { morningVitamins: false, dayMeds: false, nightMeds: false });
+
+const medDefs = [
+  { key: 'morningVitamins', label: 'Morning Vitamins', time: 'AM', icon: '🌅' },
+  { key: 'dayMeds', label: 'Daytime Medication', time: 'Day', icon: '☀️' },
+  { key: 'nightMeds', label: 'Nighttime Medication', time: 'PM', icon: '🌙' },
+];
+
+function renderMeds() {
+  document.getElementById('medList').innerHTML = medDefs.map(m => `
+    <div class="med-row ${meds[m.key] ? 'checked-row' : ''}">
+      <div class="check ${meds[m.key] ? 'checked' : ''}" onclick="toggleMed('${m.key}')"></div>
+      <span class="med-icon">${m.icon}</span>
+      <span class="med-label ${meds[m.key] ? 'done' : ''}">${m.label}</span>
+      <span class="med-time">${m.time}</span>
+    </div>
+  `).join('');
+  save('meds', meds);
+}
+
+function toggleMed(key) {
+  meds[key] = !meds[key];
+  renderMeds();
+}
+
+function resetMeds() {
+  meds = { morningVitamins: false, dayMeds: false, nightMeds: false };
+  renderMeds();
+}
+
+// ═══════════════════════════════════════
+// FASTING
+// ═══════════════════════════════════════
+let fastingDays = load('fasting', Array(10).fill(false));
+
+function renderFasting() {
+  const completed = fastingDays.filter(Boolean).length;
+  document.getElementById('fastingSub').textContent = `${completed}/10 days completed — ${10 - completed} remaining`;
+  document.getElementById('fastingProgress').style.width = `${(completed / 10) * 100}%`;
+
+  document.getElementById('fastingGrid').innerHTML = fastingDays.map((done, i) => `
+    <div class="fast-tile ${done ? 'done' : ''}" onclick="toggleFast(${i})">
+      <div class="fast-num">${done ? '✓' : (i + 1)}</div>
+      <div class="fast-label">${done ? 'Done' : 'Day ' + (i + 1)}</div>
+    </div>
+  `).join('');
+
+  document.getElementById('fastingCongrats').classList.toggle('hidden', completed < 10);
+  save('fasting', fastingDays);
+}
+
+function toggleFast(i) {
+  fastingDays[i] = !fastingDays[i];
+  renderFasting();
+}
+
+// ═══════════════════════════════════════
+// PRAYER
+// ═══════════════════════════════════════
+const PRAYERS = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+const PRAYER_ICONS = ['🌅', '☀️', '🌤', '🌅', '🌙'];
+const PRAYER_TIMES = ['Dawn', 'Midday', 'Afternoon', 'Sunset', 'Night'];
+let prayers = load('prayers', Object.fromEntries(PRAYERS.map(p => [p, false])));
+
+function renderPrayers() {
+  const completed = Object.values(prayers).filter(Boolean).length;
+  document.getElementById('prayerSub').textContent = `${completed}/5 prayers completed today`;
+
+  document.getElementById('prayerProgress').innerHTML = PRAYERS.map(p =>
+    `<div class="prayer-seg ${prayers[p] ? 'filled' : ''}"></div>`
+  ).join('');
+
+  document.getElementById('prayerList').innerHTML = PRAYERS.map((p, i) => `
+    <div class="prayer-row ${prayers[p] ? 'checked-row' : ''}">
+      <div class="check ${prayers[p] ? 'checked' : ''}" onclick="togglePrayer('${p}')"></div>
+      <span class="med-icon">${PRAYER_ICONS[i]}</span>
+      <div style="flex:1">
+        <div class="prayer-name ${prayers[p] ? 'done' : ''}">${p}</div>
+        <div class="prayer-time-label">${PRAYER_TIMES[i]}</div>
+      </div>
+      ${prayers[p] ? '<span class="prayer-completed">Completed</span>' : ''}
+    </div>
+  `).join('');
+
+  document.getElementById('prayerCongrats').classList.toggle('hidden', completed < 5);
+  save('prayers', prayers);
+}
+
+function togglePrayer(p) {
+  prayers[p] = !prayers[p];
+  renderPrayers();
+}
+
+function resetPrayers() {
+  prayers = Object.fromEntries(PRAYERS.map(p => [p, false]));
+  renderPrayers();
+}
+
+// ═══════════════════════════════════════
+// PERIOD CALENDAR
+// ═══════════════════════════════════════
+const PERIOD_START = new Date(2026, 2, 14); // March 14 2026
+const CYCLE_LENGTH = 28;
+const PERIOD_LENGTH = 5;
+let calMonth = today.getMonth();
+let calYear = today.getFullYear();
+
+function getDayStatus(date) {
+  const diff = Math.floor((date - PERIOD_START) / (86400000));
+  const cycleDiff = ((diff % CYCLE_LENGTH) + CYCLE_LENGTH) % CYCLE_LENGTH;
+  if (cycleDiff < PERIOD_LENGTH) return 'period';
+  if (cycleDiff === 14) return 'ovulation';
+  if (cycleDiff >= 12 && cycleDiff <= 16) return 'fertile';
+  return '';
+}
+
+function renderCalendar() {
+  document.getElementById('calMonthLabel').textContent = MONTHS[calMonth] + ' ' + calYear;
+  const firstDay = new Date(calYear, calMonth, 1).getDay();
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+
+  let html = DAYS_SHORT.map(d => `<div class="cal-day-header">${d}</div>`).join('');
+  for (let i = 0; i < firstDay; i++) html += '<div></div>';
+  for (let d = 1; d <= daysInMonth; d++) {
+    const date = new Date(calYear, calMonth, d);
+    const status = getDayStatus(date);
+    const isToday = date.toDateString() === today.toDateString();
+    html += `<div class="cal-cell ${status} ${isToday ? 'today' : ''}">${d}</div>`;
+  }
+  document.getElementById('calGrid').innerHTML = html;
+
+  // Next period
+  const diff = Math.floor((today - PERIOD_START) / 86400000);
+  const currentCycleDay = ((diff % CYCLE_LENGTH) + CYCLE_LENGTH) % CYCLE_LENGTH;
+  const daysUntil = currentCycleDay === 0 ? 0 : CYCLE_LENGTH - currentCycleDay;
+  document.getElementById('nextPeriodInfo').textContent = daysUntil === 0 ? 'Period is today' : `Next period in ~${daysUntil} days`;
+}
+
+function calPrev() {
+  if (calMonth === 0) { calMonth = 11; calYear--; } else calMonth--;
+  renderCalendar();
+}
+function calNext() {
+  if (calMonth === 11) { calMonth = 0; calYear++; } else calMonth++;
+  renderCalendar();
+}
+
+// ═══════════════════════════════════════
+// BREATHING
+// ═══════════════════════════════════════
+let breathPhase = 'ready';
+let breathCycle = 0;
+let breathTimer = null;
+let countTimer = null;
+const TOTAL_CYCLES = 4;
+
+function openBreathing() {
+  document.getElementById('breathOverlay').classList.remove('hidden');
+  resetBreathing();
+}
+
+function closeBreathing() {
+  document.getElementById('breathOverlay').classList.add('hidden');
+  clearTimeout(breathTimer);
+  clearTimeout(countTimer);
+  resetBreathing();
+}
+
+function resetBreathing() {
+  breathPhase = 'ready';
+  breathCycle = 0;
+  const circle = document.getElementById('breathCircle');
+  circle.className = 'breath-circle ready';
+  document.getElementById('breathCount').textContent = '☽';
+  document.getElementById('breathPhase').textContent = 'Tap to Begin';
+  document.getElementById('breathCycleInfo').classList.add('hidden');
+  document.getElementById('breathDoneBtn').classList.add('hidden');
+}
+
+function startBreathing() {
+  if (breathPhase !== 'ready') return;
+  breathCycle = 0;
+  runInhale();
+}
+
+function runInhale() {
+  breathPhase = 'inhale';
+  const circle = document.getElementById('breathCircle');
+  circle.className = 'breath-circle inhale';
+  document.getElementById('breathPhase').textContent = 'Breathe In...';
+  document.getElementById('breathCycleInfo').classList.remove('hidden');
+  document.getElementById('breathCycleInfo').textContent = `Cycle ${breathCycle + 1} of ${TOTAL_CYCLES}`;
+  startCountdown(4);
+  breathTimer = setTimeout(runHold, 4000);
+}
+
+function runHold() {
+  breathPhase = 'hold';
+  const circle = document.getElementById('breathCircle');
+  circle.className = 'breath-circle hold';
+  document.getElementById('breathPhase').textContent = 'Hold...';
+  startCountdown(7);
+  breathTimer = setTimeout(runExhale, 7000);
+}
+
+function runExhale() {
+  breathPhase = 'exhale';
+  const circle = document.getElementById('breathCircle');
+  circle.className = 'breath-circle exhale';
+  document.getElementById('breathPhase').textContent = 'Breathe Out...';
+  startCountdown(8);
+  breathTimer = setTimeout(() => {
+    breathCycle++;
+    if (breathCycle >= TOTAL_CYCLES) {
+      breathPhase = 'done';
+      circle.className = 'breath-circle done';
+      document.getElementById('breathCount').textContent = '✦';
+      document.getElementById('breathPhase').textContent = 'Well Done 🤍';
+      document.getElementById('breathCycleInfo').classList.add('hidden');
+      document.getElementById('breathDoneBtn').classList.remove('hidden');
+    } else {
+      runInhale();
+    }
+  }, 8000);
+}
+
+function startCountdown(from) {
+  let c = from;
+  document.getElementById('breathCount').textContent = c;
+  clearInterval(countTimer);
+  countTimer = setInterval(() => {
+    c--;
+    if (c <= 0) { clearInterval(countTimer); return; }
+    document.getElementById('breathCount').textContent = c;
+  }, 1000);
+}
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+renderTasks();
+renderMeds();
+renderFasting();
+renderPrayers();
+renderCalendar();
+</script>
+
+</body>
+</html>
