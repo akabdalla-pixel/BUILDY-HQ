@@ -591,7 +591,7 @@
         <h3>Add-Ons</h3>
         <p>Available for Starter and Growth+ clients. All add-ons are included free with Premium.</p>
         <div class="addons-grid">
-            <div class="addon-item"><div class="addon-name">Business Email Setup</div><div class="addon-desc">Professional email like test@test.com</div><div class="addon-price">$75</div></div>
+            <div class="addon-item"><div class="addon-name">Business Email Setup</div><div class="addon-desc">Professional email like <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7e0a1b0d0a3e0a1b0d0a501d1113">[email&#160;protected]</a></div><div class="addon-price">$75</div></div>
             <div class="addon-item"><div class="addon-name">Reviews & Testimonials Section</div><div class="addon-desc">Showcase your best Google reviews directly on your site</div><div class="addon-price">$100</div></div>
         </div>
     </div>
@@ -696,7 +696,7 @@
     </div>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 document.addEventListener('DOMContentLoaded', function() {
     var overlay = document.getElementById('modalOverlay');
     var planSelect = document.getElementById('formPlan');
@@ -757,13 +757,31 @@ document.addEventListener('DOMContentLoaded', function() {
         var addons = [];
         if (wantsEmail) addons.push('Business Email Setup (+$75)');
         if (wantsReviews) addons.push('Reviews and Testimonials (+$100)');
-        var subject = encodeURIComponent('New Inquiry' + (plan ? ' - ' + plan : '') + ' | ' + (business || name));
-        var body = 'Name: ' + name + '\nEmail: ' + email + '\nPhone: ' + phone + '\nBusiness: ' + business + '\nPlan: ' + (plan || 'Not sure yet') + '\n';
-        if (addons.length > 0) body += 'Add-ons: ' + addons.join(', ') + '\n';
-        body += '\nMessage:\n' + message;
-        window.location.href = 'mailto:support' + '@' + 'buildyhq.com?subject=' + subject + '&body=' + encodeURIComponent(body);
-        document.getElementById('contactForm').style.display = 'none';
-        document.getElementById('formSuccess').classList.add('visible');
+
+        var data = {
+            name: name,
+            email: email,
+            phone: phone,
+            business: business,
+            plan: plan || 'Not sure yet',
+            addons: addons.length > 0 ? addons.join(', ') : 'None',
+            message: message
+        };
+
+        fetch('https://formspree.io/f/mbdzvbwg', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify(data)
+        }).then(function(response) {
+            if (response.ok) {
+                document.getElementById('contactForm').style.display = 'none';
+                document.getElementById('formSuccess').classList.add('visible');
+            } else {
+                alert('Something went wrong. Please try again or email us directly.');
+            }
+        }).catch(function() {
+            alert('Something went wrong. Please try again or email us directly.');
+        });
     }
 
     // Nav CTA
@@ -797,15 +815,4 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('mobileNavClose').addEventListener('click', function() { mobileNav.classList.remove('active'); });
 
     // Mobile nav links close menu
-    var mobileLinks = document.querySelectorAll('.mobile-nav-link');
-    for (var i = 0; i < mobileLinks.length; i++) {
-        mobileLinks[i].addEventListener('click', function() { mobileNav.classList.remove('active'); });
-    }
-
-    // Escape key closes modal
-    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeModal(); });
-});
-</script>
-
-</body>
-</html>
+    var mobileLinks = document.querySelectorAll('
