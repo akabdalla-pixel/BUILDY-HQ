@@ -441,20 +441,20 @@
         <a href="#services">Services</a>
         <a href="#work">Portfolio</a>
         <a href="#pricing">Pricing</a>
-        <a href="javascript:void(0)" class="nav-cta" onclick="openModal()">Free Quote</a>
+        <a href="#contact" class="nav-cta" id="navCtaBtn">Free Quote</a>
     </div>
-    <button class="mobile-menu-btn" onclick="document.getElementById('mobileNav').classList.add('active')" aria-label="Open menu">
+    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Open menu">
         <span></span><span></span><span></span>
     </button>
 </nav>
 
 <!-- MOBILE NAV -->
 <div class="mobile-nav" id="mobileNav">
-    <button class="mobile-nav-close" onclick="this.parentElement.classList.remove('active')">&times;</button>
-    <a href="#services" onclick="this.parentElement.classList.remove('active')">Services</a>
-    <a href="#work" onclick="this.parentElement.classList.remove('active')">Portfolio</a>
-    <a href="#pricing" onclick="this.parentElement.classList.remove('active')">Pricing</a>
-    <a href="javascript:void(0)" onclick="this.parentElement.classList.remove('active'); openModal()">Contact</a>
+    <button class="mobile-nav-close" id="mobileNavClose">&times;</button>
+    <a href="#services" class="mobile-nav-link">Services</a>
+    <a href="#work" class="mobile-nav-link">Portfolio</a>
+    <a href="#pricing" class="mobile-nav-link">Pricing</a>
+    <a href="#contact" class="mobile-nav-link" id="mobileContactBtn">Contact</a>
 </div>
 
 <!-- HERO -->
@@ -463,7 +463,7 @@
     <h1>Websites that make your business <em>unforgettable.</em></h1>
     <p class="hero-sub">We design and build premium custom websites for local businesses across New Jersey. No templates. No shortcuts. Just beautiful work that brings you customers.</p>
     <div class="hero-buttons">
-        <a href="javascript:void(0)" class="btn-primary" onclick="openModal()">Get a Free Mockup</a>
+        <a href="#contact" class="btn-primary" id="heroCtaBtn">Get a Free Mockup</a>
         <a href="#work" class="btn-ghost">View Our Work</a>
     </div>
     <div class="hero-trust">
@@ -531,7 +531,7 @@
                 <li>Google Maps integration</li>
                 <li>Basic SEO setup</li>
             </ul>
-            <button class="pricing-btn pricing-btn-outline" onclick="openModal('Starter', '$600')">Get Started</button>
+            <button class="pricing-btn pricing-btn-outline" id="btnStarter" data-plan="Starter" data-price="$600">Get Started</button>
         </div>
         <div class="pricing-card featured">
             <div class="pricing-badge">Best Value</div>
@@ -547,7 +547,7 @@
                 <li>Up to 8 custom pages</li>
                 <li>2 rounds of revisions included</li>
             </ul>
-            <button class="pricing-btn pricing-btn-fill" onclick="openModal('Growth+', '$1,000')">Most Businesses Choose This</button>
+            <button class="pricing-btn pricing-btn-fill" id="btnGrowth" data-plan="Growth+" data-price="$1,000">Most Businesses Choose This</button>
         </div>
         <div class="pricing-card">
             <div class="pricing-tier">Premium</div>
@@ -565,7 +565,7 @@
                 <li>3 rounds of revisions included</li>
                 <li>Priority support</li>
             </ul>
-            <button class="pricing-btn pricing-btn-outline" onclick="openModal('Premium', '$1,500')">Go Premium</button>
+            <button class="pricing-btn pricing-btn-outline" id="btnPremium" data-plan="Premium" data-price="$1,500">Go Premium</button>
         </div>
     </div>
 
@@ -602,7 +602,7 @@
 <section class="cta-section" id="contact">
     <h2>Let's build something <em>remarkable.</em></h2>
     <p>Get a free mockup of your new website. No commitment, no pressure. Just a preview of what your business could look like online.</p>
-    <button class="btn-primary" onclick="openModal()" style="position:relative">Request Your Free Mockup</button>
+    <button class="btn-primary" id="ctaBtn" style="position:relative">Request Your Free Mockup</button>
 </section>
 
 <!-- FOOTER -->
@@ -612,19 +612,19 @@
     <div class="footer-links">
         <a href="#services">Services</a>
         <a href="#pricing">Pricing</a>
-        <a href="javascript:void(0)" onclick="openModal()">Contact</a>
+        <a href="#contact" id="footerContactBtn">Contact</a>
     </div>
 </footer>
 
 <!-- ── CONTACT MODAL ── -->
-<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+<div class="modal-overlay" id="modalOverlay">
     <div class="modal">
         <div class="modal-header">
             <div>
                 <h2 id="modalTitle">Get Your Free Mockup</h2>
                 <p id="modalSubtitle">Tell us about your business and we'll get back to you within 24 hours.</p>
             </div>
-            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <button class="modal-close" id="modalCloseBtn">&times;</button>
         </div>
         <div class="modal-body">
             <!-- FORM -->
@@ -649,7 +649,7 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">Plan Interest</label>
-                    <select class="form-select" id="formPlan" onchange="handlePlanChange()">
+                    <select class="form-select" id="formPlan">
                         <option value="">Not sure yet — help me decide</option>
                         <option value="Starter ($600)">Starter — $600</option>
                         <option value="Growth+ ($1,000)">Growth+ — $1,000</option>
@@ -683,7 +683,7 @@
                     <label class="form-label">Tell us about your project</label>
                     <textarea class="form-textarea" id="formMessage" placeholder="What does your business do? What are you looking for in a website? Any specific features you need?"></textarea>
                 </div>
-                <button class="form-submit" onclick="submitForm()">Send My Request</button>
+                <button class="form-submit" id="formSubmitBtn">Send My Request</button>
             </div>
 
             <!-- SUCCESS -->
@@ -697,47 +697,44 @@
 </div>
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-    function openModal(plan, price) {
-        const overlay = document.getElementById('modalOverlay');
-        const planSelect = document.getElementById('formPlan');
-        const title = document.getElementById('modalTitle');
-        const subtitle = document.getElementById('modalSubtitle');
+document.addEventListener('DOMContentLoaded', function() {
+    var overlay = document.getElementById('modalOverlay');
+    var planSelect = document.getElementById('formPlan');
+    var titleEl = document.getElementById('modalTitle');
+    var subtitleEl = document.getElementById('modalSubtitle');
+    var mobileNav = document.getElementById('mobileNav');
 
-        // Reset form
+    function openModal(plan, price) {
         document.getElementById('contactForm').style.display = 'block';
         document.getElementById('formSuccess').classList.remove('visible');
-
         if (plan && price) {
-            title.textContent = `Get Started with ${plan}`;
-            subtitle.textContent = `You selected the ${plan} plan at ${price}. Fill out your details and we'll get started.`;
-            // Set the select
-            for (let i = 0; i < planSelect.options.length; i++) {
-                if (planSelect.options[i].value.includes(plan)) {
+            titleEl.textContent = 'Get Started with ' + plan;
+            subtitleEl.textContent = 'You selected the ' + plan + ' plan at ' + price + '. Fill out your details and we will get started.';
+            for (var i = 0; i < planSelect.options.length; i++) {
+                if (planSelect.options[i].value.indexOf(plan) !== -1) {
                     planSelect.selectedIndex = i;
                     break;
                 }
             }
         } else {
-            title.textContent = 'Get Your Free Mockup';
-            subtitle.textContent = "Tell us about your business and we'll get back to you within 24 hours.";
+            titleEl.textContent = 'Get Your Free Mockup';
+            subtitleEl.textContent = 'Tell us about your business and we will get back to you within 24 hours.';
             planSelect.selectedIndex = 0;
         }
-
         handlePlanChange();
         overlay.classList.add('active');
         document.body.style.overflow = 'hidden';
     }
 
     function closeModal() {
-        document.getElementById('modalOverlay').classList.remove('active');
+        overlay.classList.remove('active');
         document.body.style.overflow = '';
     }
 
     function handlePlanChange() {
-        const plan = document.getElementById('formPlan').value;
-        const upsell = document.getElementById('upsellSection');
-        // Show upsell for Starter and Growth+, hide for Premium and unsure
-        if (plan.includes('Starter') || plan.includes('Growth+')) {
+        var plan = planSelect.value;
+        var upsell = document.getElementById('upsellSection');
+        if (plan.indexOf('Starter') !== -1 || plan.indexOf('Growth+') !== -1) {
             upsell.classList.add('visible');
         } else {
             upsell.classList.remove('visible');
@@ -745,28 +742,70 @@
     }
 
     function submitForm() {
-        const name = document.getElementById('formName').value.trim();
-        const email = document.getElementById('formEmail').value.trim();
-        const phone = document.getElementById('formPhone').value.trim();
-        const business = document.getElementById('formBusiness').value.trim();
-        const plan = document.getElementById('formPlan').value;
-        const message = document.getElementById('formMessage').value.trim();
-        const wantsEmail = document.getElementById('upsellEmail').checked;
-        const wantsReviews = document.getElementById('upsellReviews').checked;
-
+        var name = document.getElementById('formName').value.trim();
+        var email = document.getElementById('formEmail').value.trim();
+        var phone = document.getElementById('formPhone').value.trim();
+        var business = document.getElementById('formBusiness').value.trim();
+        var plan = planSelect.value;
+        var message = document.getElementById('formMessage').value.trim();
+        var wantsEmail = document.getElementById('upsellEmail').checked;
+        var wantsReviews = document.getElementById('upsellReviews').checked;
         if (!name || !email) {
             alert('Please fill in at least your name and email.');
             return;
         }
-
-        // Build mailto
-        let addons = [];
+        var addons = [];
         if (wantsEmail) addons.push('Business Email Setup (+$75)');
-        if (wantsReviews) addons.push('Reviews & Testimonials (+$100)');
+        if (wantsReviews) addons.push('Reviews and Testimonials (+$100)');
+        var subject = encodeURIComponent('New Inquiry' + (plan ? ' - ' + plan : '') + ' | ' + (business || name));
+        var body = 'Name: ' + name + '\nEmail: ' + email + '\nPhone: ' + phone + '\nBusiness: ' + business + '\nPlan: ' + (plan || 'Not sure yet') + '\n';
+        if (addons.length > 0) body += 'Add-ons: ' + addons.join(', ') + '\n';
+        body += '\nMessage:\n' + message;
+        window.location.href = 'mailto:support' + '@' + 'buildyhq.com?subject=' + subject + '&body=' + encodeURIComponent(body);
+        document.getElementById('contactForm').style.display = 'none';
+        document.getElementById('formSuccess').classList.add('visible');
+    }
 
-        const subject = encodeURIComponent(`New Inquiry${plan ? ' — ' + plan : ''} | ${business || name}`);
-        let body = `Name: ${name}\nEmail: ${email}\nPhone: ${phone}\nBusiness: ${business}\nPlan: ${plan || 'Not sure yet'}\n`;
-        if (addons.length > 0) body += `Add-ons: ${addons.join(', ')}\n`;
-        body += `\nMessage:\n${message}`;
+    // Nav CTA
+    document.getElementById('navCtaBtn').addEventListener('click', function(e) { e.preventDefault(); openModal(); });
+    // Hero CTA
+    document.getElementById('heroCtaBtn').addEventListener('click', function(e) { e.preventDefault(); openModal(); });
+    // CTA section button
+    document.getElementById('ctaBtn').addEventListener('click', function() { openModal(); });
+    // Footer contact
+    document.getElementById('footerContactBtn').addEventListener('click', function(e) { e.preventDefault(); openModal(); });
+    // Mobile contact
+    document.getElementById('mobileContactBtn').addEventListener('click', function(e) { e.preventDefault(); mobileNav.classList.remove('active'); openModal(); });
 
-        window.location.href = `mailto:support@buildyhq.com?subject=${subject}&body=${encodeUR
+    // Pricing buttons
+    document.getElementById('btnStarter').addEventListener('click', function() { openModal(this.dataset.plan, this.dataset.price); });
+    document.getElementById('btnGrowth').addEventListener('click', function() { openModal(this.dataset.plan, this.dataset.price); });
+    document.getElementById('btnPremium').addEventListener('click', function() { openModal(this.dataset.plan, this.dataset.price); });
+
+    // Modal close
+    document.getElementById('modalCloseBtn').addEventListener('click', function() { closeModal(); });
+    overlay.addEventListener('click', function(e) { if (e.target === overlay) closeModal(); });
+
+    // Plan select change
+    planSelect.addEventListener('change', function() { handlePlanChange(); });
+
+    // Form submit
+    document.getElementById('formSubmitBtn').addEventListener('click', function() { submitForm(); });
+
+    // Mobile menu
+    document.getElementById('mobileMenuBtn').addEventListener('click', function() { mobileNav.classList.add('active'); });
+    document.getElementById('mobileNavClose').addEventListener('click', function() { mobileNav.classList.remove('active'); });
+
+    // Mobile nav links close menu
+    var mobileLinks = document.querySelectorAll('.mobile-nav-link');
+    for (var i = 0; i < mobileLinks.length; i++) {
+        mobileLinks[i].addEventListener('click', function() { mobileNav.classList.remove('active'); });
+    }
+
+    // Escape key closes modal
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeModal(); });
+});
+</script>
+
+</body>
+</html>
